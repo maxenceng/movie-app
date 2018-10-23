@@ -2,7 +2,6 @@ package app.movies;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -11,17 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
-
-import java.util.List;
-
-import app.api.CallApis;
-import app.api.Movie;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -90,11 +78,11 @@ public class HomeActivity extends AppCompatActivity
       case R.id.nav_trending:
         this.fragmentReplacement(new TrendingFragment());
         break;
-      case R.id.nav_gallery:
-        this.fragmentReplacement(new GalleryFrament());
+      case R.id.nav_add_movie:
+        this.fragmentReplacement(new AddMovieFragment());
         break;
-      case R.id.nav_slideshow:
-        this.fragmentReplacement(new SlideshowFragment());
+      case R.id.nav_search:
+        this.fragmentReplacement(new SearchFragment());
         break;
       case R.id.nav_manage:
         this.fragmentReplacement(new ManageFragment());
