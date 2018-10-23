@@ -49,6 +49,20 @@ public class HomeActivity extends AppCompatActivity
   @BindView(R.id.drawer_layout) DrawerLayout drawer;
   @BindView(R.id.nav_view) NavigationView navigationView;
 
+  public void writeFile(Context context, String fileName, String stringToWrite) {
+    FileOutputStream outputStream;
+    try {
+      outputStream = openFileOutput(fileName, context.MODE_PRIVATE);
+      outputStream.write(stringToWrite.getBytes());
+      outputStream.close();
+      Log.i("writeFile", "File written without problem");
+    } catch (Exception e) {
+      Log.i("writeFile", "Problem writting the file");
+      e.printStackTrace();
+    }
+  }
+
+
   public boolean fileExists(Context context, String filename) {
     File file = context.getFileStreamPath(filename);
     if(file == null || !file.exists()) {
@@ -82,132 +96,143 @@ public class HomeActivity extends AppCompatActivity
       NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
       navigationView.setNavigationItemSelectedListener(this);
 
-      // Tests CalApis
 
-        Retrofit.Builder builder = new Retrofit.Builder()
-                .baseUrl("https://api.themoviedb.org/3/")
-                .addConverterFactory(GsonConverterFactory.create());
-      // CallApis testobject = new CallApis("524fb1cf1f2f350e3fba699187b503ce");
-     // Log.i("CallAPIs", testobject.apiKey);
-        Retrofit retrofit = builder.build();
 
-        CallApis apiCaller = retrofit.create(CallApis.class);
-        Call<Movie> call =  apiCaller.getAllMovies();
 
-        call.enqueue(new Callback<Movie>() {
-            @Override
-            public void onResponse(Call<Movie> call, Response<Movie> response) {
 
-                Movie resp = response.body();
-                Log.i("MONTAG", "Titre = %s" + resp.page + ", original language = " + resp.results.get(0).overview);
-                Toast.makeText(HomeActivity.this, "dddd :'(", Toast.LENGTH_SHORT).show();
-            }
 
-            @Override
-            public void onFailure(Call<Movie> call, Throwable t) {
-                Log.i("MONTAG", "onFailure: ");
-                Toast.makeText(HomeActivity.this, "error :'(", Toast.LENGTH_SHORT).show();
-            }
-        });
 
+      // API Calls  --------------------------------------------------
+
+      // Indicate the base URL and the converter used to bring the json into objects, here gson.
+      Retrofit.Builder builder = new Retrofit.Builder()
+              .baseUrl("https://api.themoviedb.org/3/")
+              .addConverterFactory(GsonConverterFactory.create());
+
+      // Builds the retrofit object
+      Retrofit retrofit = builder.build();
+      // Get the functions containing the API calls from the CallApis interface
+      CallApis apiCaller = retrofit.create(CallApis.class);
+
+      // Creating the call to get all the trending movies
+      Call<Movie> call =  apiCaller.getAllMovies();
+
+      // Managing the response of the call
+      call.enqueue(new Callback<Movie>() {
+          @Override
+          public void onResponse(Call<Movie> call, Response<Movie> response) {
+              // Gets the message contained in the response
+              Movie resp = response.body();
+              // Test the result
+              Log.i("getTrendingMovies", "Page Number = %s" + resp.page + ", original language = " + resp.results.get(0).overview);
+          }
+
+          @Override
+          public void onFailure(Call<Movie> call, Throwable t) {
+              Log.i("getTrendingMovies", "Fail");
+          }
+      });
+
+      // Creating the call to get a specific movie from a query string
       Call<Movie> callk =  apiCaller.searchMovies("chti");
 
+      // Managing the response of the call
       callk.enqueue(new Callback<Movie>() {
         @Override
         public void onResponse(Call<Movie> call, Response<Movie> response) {
-
+          // Gets the message contained in the response
           Movie resp = response.body();
-          Log.i("SEARCHMOVIE", "Titre = %s" + resp.results.get(0).title + ", original language = " + resp.results.get(0).overview);
-          Toast.makeText(HomeActivity.this, "dddd :'(", Toast.LENGTH_SHORT).show();
+          Log.i("searchMovies", "Titre = %s" + resp.results.get(0).title + ", original language = " + resp.results.get(0).overview);
         }
 
         @Override
         public void onFailure(Call<Movie> call, Throwable t) {
-          Log.i("SEARCHMOVIE", "onFailure: ");
-          Toast.makeText(HomeActivity.this, "error :'(", Toast.LENGTH_SHORT).show();
+          Log.i("searchMovies", "onFailure: ");
         }
       });
+
+      // END API CALLS ----------------------------------------------------------------------------
+
+
+
+
+      // ADD NEW MOVIES ---------------------------------------------------------------------------
+
       // The object of the movie we want to add
+      // public String overview;
+      // public String poster_path;
+      // public String title;
       AddedMovie myLocalMovie = new AddedMovie();
 
-
-
-        // Pour voir le file ecrit
-      // View -> Tool Window -> Devie Eplorer -> /data/data/app.movies/files/addedMovies
-
+      // The added movies are written in added Movies in /data/data/app.movies/files/addedMovies
+      // To see the device files in Android Studio : View -> Tool Window -> Device Explorer
       String filename = "addedMovies";
 
 
-  // Read internal storage----------------------------
-    Context ctx = getApplicationContext();
-    FileInputStream fileInputStream = null;
+      // READING THE FILE -------------------------------------------------------------------------
+      Context ctx = getApplicationContext();
+      FileInputStream fileInputStream = null;
 
-    if (fileExists(this,filename)) {
+      // If the file exist we just open it
+      if (fileExists(this,filename)) {
+        try {
+          fileInputStream = ctx.openFileInput(filename);
+        } catch (FileNotFoundException e) {
+          e.printStackTrace();
+        }
+      }
+
+      // If the file doesn't exist we create one with an empty list in json format ie "[]"
+      else {
+        // The default empty list
+        String emptyListJson = "[]";
+        // OutputStream cause we write into the file
+        FileOutputStream outputStreamNoExist = null;
+        try {
+          outputStreamNoExist = openFileOutput(filename, this.MODE_PRIVATE);
+          // We write the empty list in the file
+          outputStreamNoExist.write(emptyListJson.getBytes());
+          outputStreamNoExist.close();
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+
+        try {
+          // Once created we get it
+          fileInputStream = ctx.openFileInput(filename);
+        } catch (FileNotFoundException e) {
+          e.printStackTrace();
+        }
+
+      }
+
+      // We now read the file
+      InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+      BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+      String lineData = null;
       try {
-        fileInputStream = ctx.openFileInput(filename);
-      } catch (FileNotFoundException e) {
+        lineData = bufferedReader.readLine();
+      } catch (IOException e) {
         e.printStackTrace();
       }
-    }
-    // If the file doesn't exist we create one with an empty list in json format ie "[]"
-    else {
-      String emptyListJson = "[]";
-      FileOutputStream outputStreamNoExist = null;
-      try {
-        outputStreamNoExist = openFileOutput(filename, this.MODE_PRIVATE);
-        outputStreamNoExist.write(emptyListJson.getBytes());
-        outputStreamNoExist.close();
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
+      // Print what we found
+      Log.i("readFile", lineData);
 
-      try {
-        fileInputStream = ctx.openFileInput(filename);
-      } catch (FileNotFoundException e) {
-        e.printStackTrace();
-      }
+      // Convert the json to a list of object
+      Type listType = new TypeToken<ArrayList<AddedMovie>>(){}.getType();
+      List<AddedMovie> localMovieList = new Gson().fromJson(lineData, listType);
 
-    }
+      // We add the movie to the list of AddedMovie
+      localMovieList.add(myLocalMovie);
+
+      // We convert back to json to write in the file
+      Gson gson = new Gson();
+      String jsonInString = gson.toJson(localMovieList);
+      String fileContents =  jsonInString;
+      writeFile(this, filename, fileContents);
 
 
-    InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
-    BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-    String lineData = null;
-    try {
-      lineData = bufferedReader.readLine();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    Log.i("testlinedata", lineData);
-
-// --------------------------------------------------------
-
-
-
-
-    Type listType = new TypeToken<ArrayList<AddedMovie>>(){}.getType();
-    List<AddedMovie> localMovieList = new Gson().fromJson(lineData, listType);
-
-    localMovieList.add(myLocalMovie);
-    // New instance of the gson converter
-    Gson gson = new Gson();
-    // Get the
-    String jsonInString = gson.toJson(localMovieList);
-
-    String fileContents =  jsonInString;
-    FileOutputStream outputStream;
-
-    try {
-        outputStream = openFileOutput(filename, this.MODE_PRIVATE);
-        outputStream.write(fileContents.getBytes());
-      outputStream.close();
-        Log.i("FILE", "ca le fait");
-      } catch (Exception e) {
-        Log.i("FILE", "Raté");
-        e.printStackTrace();
-      }
-
-
+      // END ADD NEW MOVIES------------------------------------------------------------------------
 
 
     }
