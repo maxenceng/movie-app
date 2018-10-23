@@ -17,21 +17,25 @@ import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import app.adapters.TrendingAdapter;
+import app.api.CallApis;
+import app.api.Movie;
 import app.utils.DetailsListener;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class TrendingFragment extends Fragment implements DetailsListener {
   @Nullable
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
     View rootView = inflater.inflate(R.layout.fragment_trending, container, false);
-    RecyclerView recyclerView = rootView.findViewById(R.id.recycler_view);
-    recyclerView.setHasFixedSize(true);
-    GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), 3);
-    recyclerView.setLayoutManager(layoutManager);
-    TrendingAdapter trendingAdapter = new TrendingAdapter(this.generateImages(), this);
-    recyclerView.setAdapter(trendingAdapter);
+    this.generateImages(rootView);
     return rootView;
   }
 
@@ -45,29 +49,34 @@ public class TrendingFragment extends Fragment implements DetailsListener {
     Log.i("TrendingFragment", "clicked view");
   }
 
-  private List<String> generateImages() {
-    List<String> images = new ArrayList<>();
-    images.add("AAA");
-    images.add("AAA");
-    images.add("AAA");
-    images.add("AAA");
-    images.add("AAA");
-    images.add("AAA");
-    images.add("AAA");
-    images.add("AAA");
-    images.add("AAA");
-    images.add("AAA");
-    images.add("AAA");
-    images.add("AAA");
-    images.add("AAA");
-    images.add("AAA");
-    images.add("AAA");
-    images.add("AAA");
-    images.add("AAA");
-    images.add("AAA");
-    images.add("AAA");
-    images.add("AAA");
-    return images;
+  private void generateImages(final View rootView) {
+    Retrofit.Builder builder = new Retrofit.Builder()
+        .baseUrl("https://api.themoviedb.org/3/trending/")
+        .addConverterFactory(GsonConverterFactory.create());
+    // CallApis testobject = new CallApis("524fb1cf1f2f350e3fba699187b503ce");
+    // Log.i("CallAPIs", testobject.apiKey);
+    Retrofit retrofit = builder.build();
 
+    CallApis apiCaller = retrofit.create(CallApis.class);
+    Call<Movie> call =  apiCaller.getAllMovies();
+
+    call.enqueue(new Callback<Movie>() {
+      @Override
+      public void onResponse(Call<Movie> call, Response<Movie> response) {
+
+        Movie resp = response.body();
+        List<Movie.Results> movies = response.body().results;
+        RecyclerView recyclerView = rootView.findViewById(R.id.recycler_view);
+        recyclerView.setHasFixedSize(true);
+        GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
+        recyclerView.setLayoutManager(layoutManager);
+        TrendingAdapter trendingAdapter = new TrendingAdapter(movies, TrendingFragment.this);
+        recyclerView.setAdapter(trendingAdapter);
+      }
+
+      @Override
+      public void onFailure(Call<Movie> call, Throwable t) {
+      }
+    });
   }
 }

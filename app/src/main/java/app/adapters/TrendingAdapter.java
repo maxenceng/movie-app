@@ -3,7 +3,6 @@ package app.adapters;
 import android.media.Image;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,15 +18,16 @@ import org.w3c.dom.Text;
 
 import java.util.List;
 
+import app.api.Movie;
 import app.movies.R;
 import app.utils.DetailsListener;
 
 public class TrendingAdapter extends RecyclerView.Adapter<TrendingAdapter.ViewHolder> {
-  private List<String> images;
+  private List<Movie.Results> movies;
   private DetailsListener listener;
 
-  public TrendingAdapter(List<String> images, DetailsListener listener) {
-    this.images = images;
+  public TrendingAdapter(List<Movie.Results> movies, DetailsListener listener) {
+    this.movies = movies;
     this.listener = listener;
   }
 
@@ -49,9 +49,10 @@ public class TrendingAdapter extends RecyclerView.Adapter<TrendingAdapter.ViewHo
 
   @Override
   public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
-    Glide
+    String posterUrl = "https://image.tmdb.org/t/p/original" + movies.get(position).poster_path;
+        Glide
         .with(holder.imageView.getContext())
-        .load("https://via.placeholder.com/150x150")
+        .load(posterUrl)
         .into(holder.imageView);
     holder.imageView.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -63,6 +64,6 @@ public class TrendingAdapter extends RecyclerView.Adapter<TrendingAdapter.ViewHo
 
   @Override
   public int getItemCount() {
-    return images.size();
+    return movies.size();
   }
 }

@@ -48,33 +48,6 @@ public class HomeActivity extends AppCompatActivity
     navigationView.setNavigationItemSelectedListener(this);
 
     this.fragmentReplacement(new TrendingFragment());
-    // Tests CalApis
-
-      Retrofit.Builder builder = new Retrofit.Builder()
-              .baseUrl("https://api.themoviedb.org/3/trending/")
-              .addConverterFactory(GsonConverterFactory.create());
-    // CallApis testobject = new CallApis("524fb1cf1f2f350e3fba699187b503ce");
-   // Log.i("CallAPIs", testobject.apiKey);
-      Retrofit retrofit = builder.build();
-
-      CallApis apiCaller = retrofit.create(CallApis.class);
-      Call<Movie> call =  apiCaller.getAllMovies();
-
-      call.enqueue(new Callback<Movie>() {
-          @Override
-          public void onResponse(Call<Movie> call, Response<Movie> response) {
-
-              Movie resp = response.body();
-              Log.i("MONTAG", "Titre = %s" + resp.page + ", original language = " + resp.results.get(0).overview);
-              Toast.makeText(HomeActivity.this, "dddd :'(", Toast.LENGTH_SHORT).show();
-          }
-
-          @Override
-          public void onFailure(Call<Movie> call, Throwable t) {
-              Log.i("MONTAG", "onFailure: ");
-              Toast.makeText(HomeActivity.this, "error :'(", Toast.LENGTH_SHORT).show();
-          }
-      });
   }
 
   @Override
