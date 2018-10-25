@@ -23,47 +23,47 @@ import app.movies.R;
 import app.utils.DetailsListener;
 
 public class TrendingAdapter extends RecyclerView.Adapter<TrendingAdapter.ViewHolder> {
-  private List<Movie.Results> movies;
-  private DetailsListener listener;
+    private List<Movie.Results> movies;
+    private DetailsListener listener;
 
-  public TrendingAdapter(List<Movie.Results> movies, DetailsListener listener) {
-    this.movies = movies;
-    this.listener = listener;
-  }
-
-  // Provide a reference to the views for each data item
-  public static class ViewHolder extends RecyclerView.ViewHolder {
-    private ImageView imageView;
-
-    public ViewHolder(View v, final DetailsListener listener) {
-      super(v);
-      imageView = v.findViewById(R.id.image_view);
+    public TrendingAdapter(List<Movie.Results> movies, DetailsListener listener) {
+        this.movies = movies;
+        this.listener = listener;
     }
-  }
 
-  @Override
-  public TrendingAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-    View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.element_trending, parent, false);
-    return new ViewHolder(v, this.listener);
-  }
+    // Provide a reference to the views for each data item
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        private ImageView imageView;
 
-  @Override
-  public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
-    String posterUrl = "https://image.tmdb.org/t/p/original" + movies.get(position).poster_path;
+        public ViewHolder(View v, final DetailsListener listener) {
+            super(v);
+            imageView = v.findViewById(R.id.image_view);
+        }
+    }
+
+    @Override
+    public TrendingAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.element_trending, parent, false);
+        return new ViewHolder(v, this.listener);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
+        String posterUrl = "https://image.tmdb.org/t/p/original" + movies.get(position).poster_path;
         Glide
-        .with(holder.imageView.getContext())
-        .load(posterUrl)
-        .into(holder.imageView);
-    holder.imageView.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        listener.onRowClick(position);
-      }
-    });
-  }
+            .with(holder.imageView.getContext())
+            .load(posterUrl)
+            .into(holder.imageView);
+        holder.imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onRowClick(position);
+            }
+        });
+    }
 
-  @Override
-  public int getItemCount() {
-    return movies.size();
-  }
+    @Override
+    public int getItemCount() {
+        return movies.size();
+    }
 }
