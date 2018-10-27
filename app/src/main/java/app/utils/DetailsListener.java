@@ -1,8 +1,9 @@
 package app.utils;
 
-import android.view.View;
+import app.addMovie.AddedMovie;
+import app.api.Movie;
 
 public interface DetailsListener {
-  void onRowClick(int position);
-  void onViewClick(View view, int position);
+  void onMovieClick(Movie.Results movie);
+  void onAddedMovieClick(AddedMovie movie);
 }

@@ -1,14 +1,23 @@
 package app.addMovie;
 
+
 public class AddedMovie {
-    public AddedMovie() {
-        overview = "This is a default overview";
-        poster_path = "C:/DefaultPath";
-        title = "Default Title";
+    private String overview;
+    private String title;
+
+    public String getOverview() {
+        return overview;
     }
 
-    public String overview;
-    public String poster_path;
-    public String title;
+    public void setOverview(String overview) {
+        this.overview = overview;
+    }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 }

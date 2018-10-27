@@ -1,69 +1,177 @@
 package app.movies;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 
+import android.widget.TextView;
+import app.utils.RetrofitBuilder;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.bumptech.glide.Glide;
-
-import java.util.List;
-
-import app.adapters.TrendingAdapter;
 import app.api.CallApis;
 import app.api.Movie;
-import butterknife.BindView;
+import com.bumptech.glide.request.RequestOptions;
+import com.google.gson.Gson;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+
+import java.io.FileInputStream;
+import java.util.List;
+
+import static app.utils.StorageTools.getFileContent;
+import static app.utils.StorageTools.getStringFromFile;
+import static app.utils.StorageTools.writeFile;
 
 public class DetailsFragment extends Fragment {
-    @BindView(R.id.image_view) ImageView imageView;
+    @BindView(R.id.image_details) ImageView imageView;
+    @BindView(R.id.movie_title) TextView movieTitle;
+    @BindView(R.id.movie_overview) TextView movieOverview;
+    @BindView(R.id.movie_rating) TextView movieRating;
+    @BindView(R.id.button_add_favorites) Button addToFavorites;
+    @BindView(R.id.button_remove_favorites) Button removeFromFavorites;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_search, container, false); // REPLACE WITH R.layout.fragment_details
-        this.getDetails(rootView);
+        View rootView = inflater.inflate(R.layout.fragment_details, container, false);
+        ButterKnife.bind(this, rootView);
+        Bundle args = getArguments();
+        if (args == null) return rootView;
+        boolean addedMovie = args.getBoolean("addedMovie");
+        if (addedMovie) {
+            String addedMovieTitle = args.getString("movieTitle");
+            String addedMovieOverview = args.getString("movieOverview");
+            this.getAddedMovieDetails(addedMovieTitle, addedMovieOverview);
+        } else {
+            int movieId = args.getInt("id");
+            this.getDetails(movieId);
+        }
         return rootView;
     }
 
-    private void getDetails(final View rootView) {
-        Retrofit.Builder builder = new Retrofit.Builder()
-            .baseUrl("https://api.themoviedb.org/3/trending/")
-            .addConverterFactory(GsonConverterFactory.create());
-        Retrofit retrofit = builder.build();
+    private Boolean movieInFavorites() {
+        String defaultValue = "[]";
+        Context ctx = getActivity().getApplicationContext();
+        String filename = "favorites";
+        // Get the file, creates it if doesn't exist
+        FileInputStream fileInputStream = getFileContent(ctx, filename, defaultValue);
+        // Get the data inside the file
+        // replace removes duplicates
+        String lineData = getStringFromFile(fileInputStream);
+        return lineData.contains(movieTitle.getText().toString());
+    }
 
-        CallApis apiCaller = retrofit.create(CallApis.class);
+    @OnClick(R.id.button_add_favorites) void addToFavorites() {
+        String defaultValue = "[]";
+        Context ctx = getActivity().getApplicationContext();
+        String filename = "favorites";
+        String movieTitleText = movieTitle.getText().toString();
+        // Get the file, creates it if doesn't exist
+        FileInputStream fileInputStream = getFileContent(ctx, filename, defaultValue);
+        // Get the data inside the file
+        String lineData = getStringFromFile(fileInputStream);
+
+        Gson parser = new Gson();
+
+        // We add the id to the json list in the string format
+        String jsonInString = addObjectToString(movieTitleText, parser, lineData);
+
+        addToFavorites.setVisibility(View.INVISIBLE);
+        removeFromFavorites.setVisibility(View.VISIBLE);
+        writeFile(ctx, filename, jsonInString);
+    }
+
+    @OnClick(R.id.button_remove_favorites) void removeFromFavorites() {
+        String defaultValue = "[]";
+        Context ctx = getActivity().getApplicationContext();
+        String filename = "favorites";
+        String movieTitleText = movieTitle.getText().toString();
+        // Get the file, creates it if doesn't exist
+        FileInputStream fileInputStream = getFileContent(ctx, filename, defaultValue);
+        // Get the data inside the file
+        String lineData = getStringFromFile(fileInputStream);
+
+        Gson parser = new Gson();
+
+        // We add the id to the json list in the string format
+        String jsonInString = removeObjectFromString(movieTitleText, parser, lineData);
+        addToFavorites.setVisibility(View.VISIBLE);
+        removeFromFavorites.setVisibility(View.INVISIBLE);
+        writeFile(ctx, filename, jsonInString);
+    }
+
+    @OnClick(R.id.button_share_movie) void shareMovie() {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        String content = movieTitle.getText().toString()
+                + ":\n"
+                + movieOverview.getText().toString()
+                ;
+        intent.putExtra(Intent.EXTRA_TEXT, content);
+        intent.setType("text/plain");
+        startActivity(intent);
+
+    }
+
+    private <T> String removeObjectFromString(T object, Gson parser, String jsonString) {
+        List<T> objectList = toList(jsonString, parser);
+        objectList.remove(object);
+        return parser.toJson(objectList);
+    }
+
+    private <T> String addObjectToString(T object, Gson parser, String jsonString) {
+        List<T> objectList = toList(jsonString, parser);
+        objectList.add(object);
+        return parser.toJson(objectList);
+    }
+
+    private static <T> List<T> toList(String json, Gson parser) {
+        return parser.fromJson(json, List.class);
+    }
+
+    private void getAddedMovieDetails(String addedMovieTitle, String addedMovieOverview) {
+        movieTitle.setText(addedMovieTitle);
+        movieOverview.setText(addedMovieOverview);
+    }
+
+    private void getDetails(int movieId) {
+        CallApis apiCaller = RetrofitBuilder.buildCallApis();
         // Creating the call to get a specific movie from a query string
-        Call<Movie.Results> getMovieFromIdCall = apiCaller.getMovieFromId(Integer.toString(456165));
+        Call<Movie.Results> getMovieFromIdCall = apiCaller.getMovieFromId(Integer.toString(movieId));
         // Managing the response of the call
         getMovieFromIdCall.enqueue(new Callback<Movie.Results>() {
             @Override
-            public void onResponse(Call<Movie.Results> call, Response<Movie.Results> response) {
+            public void onResponse(@NonNull Call<Movie.Results> call, @NonNull Response<Movie.Results> response) {
                 // Gets the message contained in the response
                 Movie.Results resp = response.body();
-                Log.i("API_CALL_LOG", "Result : title = " + resp.title + ", overview = " + resp.overview);
-                String posterUrl = "https://image.tmdb.org/t/p/original" + resp.poster_path;
+                if (resp == null) return;
+                String posterUrl = "https://image.tmdb.org/t/p/original" + resp.getPoster_path();
                 Glide
-                    .with(imageView.getContext())
+                    .with(getContext())
                     .load(posterUrl)
+                    .apply(new RequestOptions().override(400, 400))
                     .into(imageView);
-                // Add content for the details
+                movieTitle.setText(resp.getTitle());
+                movieOverview.setText(resp.getOverview());
+                String rating = String.format("%.2f", resp.getVote_average()) + " / 10";
+                movieRating.setText(rating);
+                if (!movieInFavorites()) {
+                    removeFromFavorites.setVisibility(View.INVISIBLE);
+                }
             }
 
             @Override
-            public void onFailure(Call<Movie.Results> call, Throwable t) {
-                Log.i("getMovieFromId", "onFailure: ");
+            public void onFailure(@NonNull Call<Movie.Results> call, @NonNull Throwable t) {
             }
         });
     }

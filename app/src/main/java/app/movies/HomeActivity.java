@@ -1,7 +1,7 @@
 package app.movies;
 
-import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -9,27 +9,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-
-import app.addMovie.AddedMovie;
-import retrofit2.Call;
-import retrofit2.Response;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -58,7 +38,7 @@ public class HomeActivity extends AppCompatActivity
 
         navigationView.setNavigationItemSelectedListener(this);
 
-        this.fragmentReplacement(new TrendingFragment());
+        this.fragmentReplacement(new ImageListFragment());
 
     }
 
@@ -69,13 +49,6 @@ public class HomeActivity extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.home, menu);
-        return true;
     }
 
     @Override
@@ -95,12 +68,12 @@ public class HomeActivity extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         switch (id) {
             case R.id.nav_trending:
-                this.fragmentReplacement(new TrendingFragment());
+                this.fragmentReplacement(new ImageListFragment());
                 break;
             case R.id.nav_add_movie:
                 this.fragmentReplacement(new AddMovieFragment());
@@ -112,7 +85,7 @@ public class HomeActivity extends AppCompatActivity
                 this.fragmentReplacement(new FavoritesFragment());
                 break;
             default:
-                this.fragmentReplacement(new TrendingFragment());
+                this.fragmentReplacement(new ImageListFragment());
                 break;
         }
 
