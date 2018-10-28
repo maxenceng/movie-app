@@ -24,7 +24,7 @@ public class AddedMovieViewHolder extends RecyclerView.ViewHolder {
 
     // Adds an image to the list every time it is called
     public void populateAddedMovieImage(final AddedMovie movie) {
-        String defaultUrl = "https://via.placeholder.com/200x300";
+        String defaultUrl = "https://nsa39.casimages.com/img/2018/10/28/18102803064175331.jpg";
         Glide
                 .with(imageViewAddedMovie.getContext())
                 .load(defaultUrl)
