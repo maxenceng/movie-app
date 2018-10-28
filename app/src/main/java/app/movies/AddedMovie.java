@@ -1,6 +1,8 @@
-package app.addMovie;
+package app.movies;
 
-
+/**
+ * AddedMovie class will be instanciated for movies that were created locally
+ */
 public class AddedMovie {
     private String overview;
     private String title;

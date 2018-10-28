@@ -1,7 +1,11 @@
-package app.api;
+package app.movies;
 
 import java.util.List;
 
+/**
+ * Movie class reflects the content received from TheMovieDB API
+ * The Results class corresponds to a single movie
+ */
 public class Movie {
 
     public class Results {

@@ -4,6 +4,9 @@ import app.api.CallApis;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+/**
+ * Builder class containing a single function to reduce the amount of duplicate code
+ */
 public class RetrofitBuilder {
     public static CallApis buildCallApis() {
         // Indicate the base URL and the converter used to bring the json into objects, here gson.

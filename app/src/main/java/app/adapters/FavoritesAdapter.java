@@ -8,10 +8,12 @@ import android.view.ViewGroup;
 
 import java.util.List;
 
-import app.movies.R;
+import app.activities.R;
 import app.viewHolders.FavoritesViewHolder;
 
-
+/**
+ * FavoritesAdapter is used by FavoritesFragment to create a list of movies the user has in his favorites file
+ */
 public class FavoritesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<String> movies;
 
@@ -26,6 +28,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         return new FavoritesViewHolder(v);
     }
 
+    // If the holder has the correct instance, populate the RecyclerView element
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if(holder instanceof FavoritesViewHolder){

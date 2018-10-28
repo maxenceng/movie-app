@@ -1,4 +1,4 @@
-package app.movies;
+package app.activities;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -19,9 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.adapters.ImageListAdapter;
-import app.addMovie.AddedMovie;
+import app.movies.AddedMovie;
 import app.api.CallApis;
-import app.api.Movie;
+import app.movies.Movie;
 import app.utils.DetailsListener;
 import app.utils.RetrofitBuilder;
 import butterknife.BindView;

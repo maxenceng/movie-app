@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="app.movies">
+  package="app.activities">
   <uses-permission android:name="android.permission.INTERNET"/>
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
@@ -14,7 +14,7 @@
     android:supportsRtl="true"
     android:theme="@style/AppTheme">
     <activity
-      android:name=".HomeActivity"
+      android:name="app.activities.HomeActivity"
       android:label="@string/app_name"
       android:theme="@style/AppTheme.NoActionBar">
       <intent-filter>

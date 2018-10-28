@@ -1,4 +1,4 @@
-package app.movies;
+package app.activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -19,7 +19,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.bumptech.glide.Glide;
 import app.api.CallApis;
-import app.api.Movie;
+import app.movies.Movie;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.gson.Gson;
 import retrofit2.Call;

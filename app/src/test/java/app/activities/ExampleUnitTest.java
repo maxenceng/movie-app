@@ -1,4 +1,4 @@
-package app.movies;
+package app.activities;
 
 import org.junit.Test;
 

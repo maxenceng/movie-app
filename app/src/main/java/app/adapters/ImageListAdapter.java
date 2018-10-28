@@ -6,16 +6,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import app.addMovie.AddedMovie;
+import app.movies.AddedMovie;
 import app.viewHolders.AddedMovieViewHolder;
 import app.viewHolders.MovieViewHolder;
 
 import java.util.List;
 
-import app.api.Movie;
-import app.movies.R;
+import app.movies.Movie;
+import app.activities.R;
 import app.utils.DetailsListener;
-
+/**
+ * ImageListAdapter is used by ImageListFragment to create a list of movies, including results from TheMovieDB
+ * and movies added locally
+ */
 public class ImageListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final int VIEW_TYPE_MOVIE = 0;
     private final int VIEW_TYPE_ADDED_MOVIE = 1;
@@ -29,6 +32,9 @@ public class ImageListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         this.listener = listener;
     }
 
+    // Holder instance will be of type MovieViewHolder if there are still results from the API call
+    // Holder instance will be of type AddedMovieViewHolder if there are no more movies from the API call
+    // It will then create a view holder for locally added movies
     @Override
     @NonNull
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType){
@@ -39,12 +45,13 @@ public class ImageListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         return new AddedMovieViewHolder(v, listener);
     }
 
+    // If the holder is a MovieViewHolder, then populate the RecyclerView element with movies
+    // If the holder is a AddedMovieViewHolder, then populate the RecyclerView element with added movies
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if(holder instanceof MovieViewHolder){
             ((MovieViewHolder) holder).populateMovieImage(movies.get(position));
         }
-
         if(holder instanceof AddedMovieViewHolder){
             ((AddedMovieViewHolder) holder).populateAddedMovieImage(addedMovies.get(position - movies.size()));
         }
@@ -55,6 +62,7 @@ public class ImageListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         return movies.size() + addedMovies.size();
     }
 
+    // Defines view type to be able to display movies and addedMovies side by side in the list
     @Override
     public int getItemViewType(int position) {
         if (position < movies.size()) {

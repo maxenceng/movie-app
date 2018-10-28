@@ -1,4 +1,4 @@
-package app.movies;
+package app.activities;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -21,7 +21,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import app.addMovie.AddedMovie;
+import app.movies.AddedMovie;
 
 import static app.utils.StorageTools.getFileContent;
 import static app.utils.StorageTools.getStringFromFile;

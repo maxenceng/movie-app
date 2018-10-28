@@ -1,4 +1,4 @@
-package app.movies;
+package app.activities;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,6 +14,9 @@ import android.view.MenuItem;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+/**
+ * Main activity of the application, allows navigation between fragments
+ */
 public class HomeActivity extends AppCompatActivity
     implements NavigationView.OnNavigationItemSelectedListener {
     @BindView(R.id.toolbar)
@@ -31,6 +34,7 @@ public class HomeActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
 
+        // Navigation drawer toggle, default code
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
             this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -42,6 +46,7 @@ public class HomeActivity extends AppCompatActivity
 
     }
 
+    // Closes the drawer if it was open when the user pressed the back button
     @Override
     public void onBackPressed() {
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -66,7 +71,8 @@ public class HomeActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
+    // Sets the navigation parameters so that the fragment is changed by clicking
+    // on an item in the navigation drawer
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
@@ -93,6 +99,7 @@ public class HomeActivity extends AppCompatActivity
         return true;
     }
 
+    // Changes the current fragment with the one sent as parameter
     private void fragmentReplacement(Fragment fragment) {
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
     }

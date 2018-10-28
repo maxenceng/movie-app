@@ -1,4 +1,4 @@
-package app.movies;
+package app.activities;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;

@@ -1,4 +1,4 @@
-package app.movies;
+package app.activities;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

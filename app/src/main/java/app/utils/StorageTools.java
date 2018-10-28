@@ -10,7 +10,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+/**
+ * Storage tools provides the functions to read/write a file
+ */
 public class StorageTools {
+    // Function that writes the content sent to a file on the device
     public static void writeFile(Context context, String fileName, String stringToWrite) {
         FileOutputStream outputStream;
         try {
@@ -22,6 +26,7 @@ public class StorageTools {
         }
     }
 
+    // Gets the content from the file
     public static FileInputStream getFileContent(Context context, String filename, String defaultValue) {
         FileInputStream fileInputStream = null;
         if (fileExists(context, filename)) {
@@ -31,7 +36,7 @@ public class StorageTools {
                 e.printStackTrace();
             }
         } else {
-            writeDefaultValue(context, filename, defaultValue);
+            writeFile(context, filename, defaultValue);
             try {
                 fileInputStream = context.openFileInput(filename);
             } catch (FileNotFoundException e) {
@@ -41,11 +46,13 @@ public class StorageTools {
         return fileInputStream;
     }
 
+    // Checks if the file already exists
     private static boolean fileExists(Context context, String filename) {
         File file = context.getFileStreamPath(filename);
         return file != null && file.exists();
     }
 
+    // Transforms the stream received into a string
     public static String getStringFromFile(FileInputStream fileInputStream) {
         // We now read the file
         InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
@@ -57,17 +64,5 @@ public class StorageTools {
             e.printStackTrace();
         }
         return lineData;
-    }
-
-    private static void writeDefaultValue(Context context, String filename, String defaultValue) {
-        FileOutputStream outputStreamNoExist;
-        try {
-            outputStreamNoExist = context.openFileOutput(filename, context.MODE_PRIVATE);
-            // We write the empty list in the file
-            outputStreamNoExist.write(defaultValue.getBytes());
-            outputStreamNoExist.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }
