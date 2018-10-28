@@ -1,6 +1,7 @@
 package app.utils;
 
 import android.content.Context;
+import com.google.gson.Gson;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -9,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
 
 /**
  * Storage tools provides the functions to read/write a file
@@ -64,5 +66,9 @@ public class StorageTools {
             e.printStackTrace();
         }
         return lineData;
+    }
+
+    public static <T> List<T> toList(String json, Gson parser) {
+        return parser.fromJson(json, List.class);
     }
 }

@@ -21,10 +21,15 @@ import java.util.List;
 
 import static app.utils.StorageTools.getFileContent;
 import static app.utils.StorageTools.getStringFromFile;
+import static app.utils.StorageTools.toList;
 
+/**
+ * Fragment called when the user clicks on 'Favorites' in the navigation drawer
+ */
 public class FavoritesFragment extends Fragment {
     @BindView(R.id.recycler_favorites) RecyclerView recyclerView;
 
+    // Basic onCreateView function with an added call to get all favorites for this device
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -35,6 +40,10 @@ public class FavoritesFragment extends Fragment {
     }
 
 
+    // Gets all the movies added in the local 'favorites' file
+    // Then links the RecyclerView element to the favoritesAdapter
+    // The favorites are written in /data/data/app.movies/files/favorites
+    // To see the device files in Android Studio : View -> Tool Window -> Device Explorer
     private void getFavorites() {
         Context ctx = getActivity().getApplicationContext();
         String defaultValue = "[]";
@@ -49,10 +58,6 @@ public class FavoritesFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
         FavoritesAdapter favoritesAdapter = new FavoritesAdapter(favorites);
         recyclerView.setAdapter(favoritesAdapter);
-    }
-
-    private static <T> List<T> toList(String json, Gson parser) {
-        return parser.fromJson(json, List.class);
     }
 
 }

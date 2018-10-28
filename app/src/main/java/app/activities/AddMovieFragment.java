@@ -27,6 +27,10 @@ import static app.utils.StorageTools.getFileContent;
 import static app.utils.StorageTools.getStringFromFile;
 import static app.utils.StorageTools.writeFile;
 
+/**
+ * Fragment called when the user clicks on 'Add a movie' in the navigation drawer
+ * Displays fields to add a custom movie
+ */
 public class AddMovieFragment extends Fragment {
     @BindView(R.id.add_movie_title) TextInputEditText movieTitle;
     @BindView(R.id.add_movie_overview) TextInputEditText movieOverview;
@@ -40,18 +44,15 @@ public class AddMovieFragment extends Fragment {
         return rootView;
     }
 
+    // Add a movie to a list in a file on the device called addedMovies
+    // The added movies are written in added Movies in /data/data/app.movies/files/addedMovies
+    // To see the device files in Android Studio : View -> Tool Window -> Device Explorer
     @OnClick(R.id.button_add_movie) void addMovie() {
         // The object of the movie we want to add
-        // public String overview;
-        // public String poster_path;
-        // public String title;
         AddedMovie myLocalMovie = new AddedMovie();
         myLocalMovie.setTitle(movieTitle.getText().toString());
         myLocalMovie.setOverview(movieOverview.getText().toString());
 
-
-        // The added movies are written in added Movies in /data/data/app.movies/files/addedMovies
-        // To see the device files in Android Studio : View -> Tool Window -> Device Explorer
         String filename = "addedMovies";
 
 

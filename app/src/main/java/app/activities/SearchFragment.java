@@ -15,6 +15,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+/**
+ * Fragment called when the user clicks on 'Search' in the navigation drawer
+ */
 public class SearchFragment extends Fragment {
     @BindView(R.id.button_search) Button button;
     @BindView(R.id.search_text) TextInputEditText searchText;
@@ -26,11 +29,14 @@ public class SearchFragment extends Fragment {
         return rootView;
     }
 
+    // Called when the user put a value in the search input, then clicks on the 'Search' button
+    // Inputs arguments from the search input and calls the imageList fragment
     @OnClick(R.id.button_search) void buttonClicked() {
         String search = searchText.getText().toString();
         Fragment imageListFragment = new ImageListFragment();
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        // Prepares arguments for the imageList fragment
         Bundle args = new Bundle();
         args.putString("search", search);
         imageListFragment.setArguments(args);

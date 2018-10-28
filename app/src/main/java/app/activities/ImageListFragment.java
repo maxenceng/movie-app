@@ -35,9 +35,16 @@ import retrofit2.Response;
 import static app.utils.StorageTools.getFileContent;
 import static app.utils.StorageTools.getStringFromFile;
 
+/**
+ * Default fragment, also called when the user clicks on 'Trending' in the navigation drawer
+ * or when the user has searched for a movie
+ */
 public class ImageListFragment extends Fragment implements DetailsListener {
     @BindView(R.id.recycler_images) RecyclerView recyclerView;
 
+    // Creates the fragment view and if arguments were passed to the fragment, it will search for movies that
+    // includes the string passed to the fragment and look for movies locally and with the API
+    // Else, if there were no arguments, simply displays the trending view
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -53,11 +60,13 @@ public class ImageListFragment extends Fragment implements DetailsListener {
         return rootView;
     }
 
+    // Clicking on a movie image leads to the DetailsFragment, indicating it's not an addedMovie
     @Override
     public void onMovieClick(Movie.Results movie) {
         Fragment detailsFragment = new DetailsFragment();
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        // Prepares arguments for the details fragment
         Bundle args = new Bundle();
         args.putBoolean("AddedMovie", false);
         args.putInt("id", movie.getId());
@@ -65,11 +74,13 @@ public class ImageListFragment extends Fragment implements DetailsListener {
         fragmentTransaction.replace(R.id.fragment_container, detailsFragment).commit();
     }
 
+    // Clicking on an addedMovie image leads to the details fragment, indicating it is an addedMovie
     @Override
     public void onAddedMovieClick(AddedMovie movie) {
         Fragment detailsFragment = new DetailsFragment();
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        // Prepares arguments for the details fragment
         Bundle args = new Bundle();
         args.putBoolean("addedMovie", true);
         args.putString("movieTitle", movie.getTitle());
@@ -78,12 +89,15 @@ public class ImageListFragment extends Fragment implements DetailsListener {
         fragmentTransaction.replace(R.id.fragment_container, detailsFragment).commit();
     }
 
+    // Gets trending movies from the API then processes the call
     private void getTrending() {
         CallApis apiCaller = RetrofitBuilder.buildCallApis();
         Call<Movie> call = apiCaller.getTrendingMovies();
         processCall(call, null);
     }
 
+    // Gets movies searched with a search string from the API then processes the call with
+    // addedMovies filtered with the search string
     private void getMoviesFromSearch(String search) {
         CallApis apiCaller = RetrofitBuilder.buildCallApis();
         // Creating the call to get a specific movie from a query string
@@ -93,6 +107,7 @@ public class ImageListFragment extends Fragment implements DetailsListener {
         processCall(call, filteredAddedMovies);
     }
 
+    // Gets the list of locally added movies
     private List<AddedMovie> getAddedMovies() {
         Context ctx = getActivity().getApplicationContext();
         String defaultValue = "[]";
@@ -105,6 +120,7 @@ public class ImageListFragment extends Fragment implements DetailsListener {
         return new Gson().fromJson(lineData, listType);
     }
 
+    // Gets the list of locally added movies filtered with the search string
     private List<AddedMovie> getAddedMoviesWithSearch(String search) {
         List<AddedMovie> originalList = this.getAddedMovies();
         List<AddedMovie> filteredList = new ArrayList<>();
@@ -116,6 +132,8 @@ public class ImageListFragment extends Fragment implements DetailsListener {
         return filteredList;
     }
 
+    // Processes API calls and links the RecyclerView to the ImageListAdapter so that we can display
+    // movies and addedMovies side by side
     private void processCall(Call<Movie> call, final List<AddedMovie> filteredList) {
         call.enqueue(new Callback<Movie>() {
             @Override
